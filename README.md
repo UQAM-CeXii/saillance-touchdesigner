@@ -17,16 +17,6 @@ Dans un patch, le bouton **Mettre à jour** de `saillance_master` (page Commun) 
 
 Les .tox et .toe ne sont jamais dans le repository, seulement dans les releases.
 
-## Publier une release
-
-1. Copiez le texte des DAT modifiés dans leurs fichiers de `touchdesigner/`, puis faites un commit et un push.
-1. Mettez la nouvelle version dans **Version commune** de `saillance_master`.
-1. Exportez les 5 .tox (`commun_<nom>_vX.Y.Z.tox`) et sauvegardez le gabarit (.toe).
-1. **Releases** > **Draft a new release** : tag = la même version (ex. `v0.4.0`), titre = la version, description = ce qui a changé.
-1. Joignez les 5 .tox et le .toe, puis **Publish release**.
-
-Le tag doit être exactement la **Version commune** de `saillance_master`, sinon la mise à jour ne se termine pas.
-
 ## Documentation
 
 Le wiki Confluence SAILLANCE 2026 : TD Gabarit, TD saillance_master, TD MQTT, TD DMX.
