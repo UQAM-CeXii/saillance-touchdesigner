@@ -141,7 +141,19 @@ def univers_texte(r):
 
 def module(c):
 	o = c.op('dmx_fonctions') if c is not None else None
-	return o.module if o is not None else None
+	try:
+		return o.module if o is not None else None
+	except Exception:
+		return None
+
+
+def eteint(c):
+	# dmx dans une base au cook désactivé (ex. bibliotheque) : on n'y touche pas
+	while c is not None and c.path != '/':
+		if not c.allowCooking:
+			return True
+		c = c.parent()
+	return False
 
 
 def lire(c, nom, defaut=None):
@@ -266,6 +278,9 @@ def Tic(comp):
 			INSCRITS.discard(chemin)
 			HORS.discard(chemin)
 			continue
+		if eteint(c):
+			HORS.discard(chemin)
+			continue
 		m = module(c)
 		if m is not None:
 			try:
@@ -299,6 +314,8 @@ def Tic(comp):
 	if cle != ETAT['menus']:
 		ETAT['menus'] = cle
 		for chemin in INSCRITS:
+			if eteint(op(chemin)):
+				continue
 			menu(op(chemin), set(PRISES) | {n for n, ch in utilisees.items() if ch != chemin})
 	ETAT['utilisees'] = utilisees
 

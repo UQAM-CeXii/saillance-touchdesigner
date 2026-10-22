@@ -1,0 +1,5 @@
+# Les .tox et .toe vont dans les releases, pas dans le repository
+*.tox
+*.toe
+Backup/
+__pycache__/
