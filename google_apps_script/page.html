@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fond: #f3f2ee; --surface: #ffffff; --surface-2: #faf9f6; --texte: #17171a; --doux: #66656b; --ligne: #e3e1da;
+    --ecran: #d9480f; --ecran-pale: #fff0e8;
+    --jam: #2b8a3e; --jam-pale: #ebf7ee;
+    --globale: #5f3dc4; --globale-pale: #f1edff;
+    --direct: #e03131;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fond: #121214; --surface: #1c1c20; --surface-2: #232328; --texte: #ededf0; --doux: #9b9aa3; --ligne: #2f2f36;
+      --ecran: #ff8a4c; --ecran-pale: #3a2218;
+      --jam: #63d47c; --jam-pale: #17301d;
+      --globale: #a58bff; --globale-pale: #282041;
+      --direct: #ff6b6b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fond); color: var(--texte); font: 15px/1.5 Inter, "Segoe UI", system-ui, sans-serif; }
+  main { max-width: 1080px; margin: 0 auto; padding: 32px 16px 48px; }
+
+  header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+  .marque { font: 600 12px/1 Inter, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--doux); margin: 0 0 8px; }
+  h1 { font: 700 30px/1.1 "Space Grotesk", sans-serif; margin: 0; letter-spacing: -.01em; }
+  .etat { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--doux);
+          background: var(--surface); border: 1px solid var(--ligne); border-radius: 999px; padding: 6px 12px; }
+  .etat i { width: 8px; height: 8px; border-radius: 50%; background: var(--direct); animation: pouls 2s infinite; }
+  .etat.hors i { background: var(--doux); animation: none; }
+  @keyframes pouls { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--direct) 60%, transparent); }
+                     70% { box-shadow: 0 0 0 8px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+
+  .intro { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; background: var(--surface);
+           border: 1px solid var(--ligne); border-radius: 14px; padding: 18px 20px; margin-bottom: 28px; }
+  .intro h2 { font: 600 14px/1.3 Inter, sans-serif; margin: 0 0 6px; }
+  .intro p { margin: 0; color: var(--doux); font-size: 14px; }
+  .rappel { background: var(--surface-2); border-left: 3px solid var(--texte); border-radius: 8px; padding: 12px 14px; }
+  .rappel p { color: var(--texte); font-weight: 500; }
+
+  .colonnes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .colonne { --c: var(--doux); --c-pale: var(--surface-2); }
+  .colonne[data-partie="Écran"] { --c: var(--ecran); --c-pale: var(--ecran-pale); }
+  .colonne[data-partie="Jam"] { --c: var(--jam); --c-pale: var(--jam-pale); }
+  .colonne[data-partie="Globale"] { --c: var(--globale); --c-pale: var(--globale-pale); }
+  .colonne h3 { display: flex; align-items: center; justify-content: space-between; margin: 0 0 10px;
+                font: 700 18px/1 "Space Grotesk", sans-serif; padding-bottom: 10px; border-bottom: 2px solid var(--c); }
+  .compte { font: 600 12px/1 Inter, sans-serif; color: var(--c); background: var(--c-pale); border-radius: 999px; padding: 5px 10px; }
+
+  .carte { background: var(--surface); border: 1px solid var(--ligne); border-left: 4px solid var(--c);
+           border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+  .patch { font: 700 18px/1.25 "Space Grotesk", sans-serif; overflow-wrap: anywhere; margin: 0 0 6px; }
+  .tache { color: var(--texte); font-size: 14px; overflow-wrap: anywhere; margin: 0 0 12px; }
+  .tache.vide { color: var(--doux); font-style: italic; }
+  .meta { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; font-size: 12px; color: var(--doux);
+          border-top: 1px solid var(--ligne); padding-top: 10px; }
+  .avatar { width: 22px; height: 22px; border-radius: 50%; background: var(--c-pale); color: var(--c);
+            display: grid; place-items: center; font: 700 10px/1 "Space Grotesk", sans-serif; text-transform: uppercase; }
+  .nom { font-weight: 600; color: var(--texte); font-size: 13px; }
+  .pastille { margin-left: auto; font-weight: 600; border-radius: 999px; padding: 3px 9px; white-space: nowrap; }
+  .pastille.ok { color: var(--jam); background: var(--jam-pale); }
+  .pastille.vieille { color: var(--direct); background: color-mix(in srgb, var(--direct) 14%, transparent); }
+  .officielle { font-size: 13px; color: var(--doux); margin: 6px 0 0; }
+  .officielle b { color: var(--texte); }
+  .personne-vide { color: var(--doux); font-size: 14px; border: 1px dashed var(--ligne); border-radius: 12px; padding: 16px; text-align: center; }
+
+  @media (max-width: 760px) {
+    .intro, .colonnes { grid-template-columns: 1fr; }
+    h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <p class="marque">Saillance, TouchDesigner</p>
+      <h1>Qui travaille sur quoi</h1>
+      <p class="officielle" id="officielle"></p>
+    </div>
+    <span class="etat" id="etat"><i></i><span id="maj">Chargement…</span></span>
+  </header>
+
+  <section class="intro">
+    <div>
+      <h2>Comment ça marche</h2>
+      <p>Cette page montre qui travaille en ce moment sur un patch TouchDesigner de Saillance. Quand tu ouvres un patch qui contient la composante commune, Touch te demande ton nom, la partie et ta tâche, puis tu apparais ici. Tu disparais quand tu fermes le patch, ou après 2 minutes sans signal. La page se met à jour toute seule.</p>
+      <p style="margin-top:8px">La pastille de chaque carte indique la version de la composante commune utilisée : verte si c'est la version officielle, rouge s'il faut cliquer Mettre à jour sur saillance_master.</p>
+    </div>
+    <div class="rappel">
+      <h2>Avant de commencer</h2>
+      <p>Jette toujours un coup d'œil ici avant de travailler, pour ne pas modifier la même chose qu'une autre personne.</p>
+    </div>
+  </section>
+
+  <div class="colonnes" id="colonnes"></div>
+</main>
+<script>
+  const PARTIES = ['Écran', 'Jam', 'Globale'];
+  const heure = d => new Date(d).toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' });
+  const echapper = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  function duree(iso) {
+    const min = Math.max(0, Math.round((Date.now() - new Date(iso)) / 60000));
+    return min < 60 ? min + ' min' : Math.floor(min / 60) + ' h ' + String(min % 60).padStart(2, '0');
+  }
+
+  function carte(s) {
+    const tache = s.tache ? '<p class="tache">' + echapper(s.tache) + '</p>' : '<p class="tache vide">Aucune description</p>';
+    return '<article class="carte"><h4 class="patch">' + echapper(s.patch) + '</h4>' + tache +
+      '<div class="meta"><span class="avatar">' + echapper(s.nom.slice(0, 2)) + '</span>' +
+      '<span class="nom">' + echapper(s.nom) + '</span>' +
+      '<span>depuis ' + heure(s.debut) + ' (' + duree(s.debut) + ')</span>' +
+      (s.aJour
+        ? '<span class="pastille ok">commune ' + echapper(s.versionCommune) + '</span>'
+        : '<span class="pastille vieille">commune ' + echapper(s.versionCommune || '?') + ', à mettre à jour</span>') +
+      '</div></article>';
+  }
+
+  function afficher(donnees) {
+    const sessions = donnees.sessions;
+    document.getElementById('officielle').innerHTML = 'Composante commune officielle : <b>' + echapper(donnees.officielle) + '</b>';
+    document.getElementById('etat').classList.remove('hors');
+    document.getElementById('maj').textContent = 'En direct, mis à jour à ' + heure(new Date());
+    // une composante d'une ancienne version n'envoie pas de partie : elle va dans « Sans partie »
+    const colonnes = PARTIES.slice();
+    sessions.forEach(s => { if (!PARTIES.includes(s.partie)) s.partie = 'Sans partie'; });
+    if (sessions.some(s => s.partie === 'Sans partie')) colonnes.push('Sans partie');
+    document.getElementById('colonnes').innerHTML = colonnes.map(partie => {
+      const liste = sessions.filter(s => s.partie === partie);
+      return '<section class="colonne" data-partie="' + partie + '"><h3>' + partie +
+        '<span class="compte">' + liste.length + '</span></h3>' +
+        (liste.length ? liste.map(carte).join('') : '<p class="personne-vide">Personne en ce moment</p>') + '</section>';
+    }).join('');
+  }
+
+  function charger() {
+    google.script.run.withSuccessHandler(afficher)
+      .withFailureHandler(() => {
+        document.getElementById('etat').classList.add('hors');
+        document.getElementById('maj').textContent = 'Connexion perdue, nouvel essai dans 20 s';
+      })
+      .listeActive();
+  }
+  charger();
+  setInterval(charger, 20000);
+</script>
+</body>
+</html>

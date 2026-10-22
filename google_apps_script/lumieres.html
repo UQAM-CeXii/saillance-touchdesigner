@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<title>Réservations DMX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fond: #f3f2ee; --surface: #ffffff; --surface-2: #faf9f6; --texte: #17171a; --doux: #66656b; --ligne: #e3e1da;
+    --accent: #17171a; --sur-accent: #ffffff;
+    --ecrans: #d9480f; --jam: #2b8a3e; --globale: #5f3dc4; --regie: #1971c2;
+    --erreur: #e03131; --erreur-pale: #fff0f0; --ok: #2b8a3e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --fond: #121214; --surface: #1c1c20; --surface-2: #232328; --texte: #ededf0; --doux: #9b9aa3; --ligne: #2f2f36;
+      --accent: #ededf0; --sur-accent: #121214;
+      --ecrans: #ff8a4c; --jam: #63d47c; --globale: #a58bff; --regie: #5cb3ff;
+      --erreur: #ff6b6b; --erreur-pale: #3a1c1c; --ok: #63d47c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fond); color: var(--texte); font: 15px/1.5 Inter, "Segoe UI", system-ui, sans-serif; }
+  main { max-width: 1080px; margin: 0 auto; padding: 32px 16px 48px; }
+  .marque { font: 600 12px/1 Inter, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--doux); margin: 0 0 8px; }
+  h1 { font: 700 30px/1.1 "Space Grotesk", sans-serif; margin: 0 0 20px; letter-spacing: -.01em; }
+  h2 { font: 600 14px/1.3 Inter, sans-serif; margin: 0 0 6px; }
+  .carte { background: var(--surface); border: 1px solid var(--ligne); border-radius: 14px; padding: 18px 20px; margin-bottom: 20px; }
+  .intro > p { margin: 0 0 14px; color: var(--doux); font-size: 14px; max-width: 760px; }
+  .points { margin: 0 0 18px; padding-left: 18px; color: var(--doux); font-size: 14px; max-width: 820px; }
+  .points li { margin-bottom: 4px; }
+  .champs { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px 24px; margin: 0; }
+  .champs div { border-top: 1px solid var(--ligne); padding-top: 8px; }
+  .champs dt { font-weight: 600; font-size: 13px; }
+  .champs dd { margin: 2px 0 0; color: var(--doux); font-size: 13px; }
+
+  form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; align-items: end; }
+  label { display: grid; gap: 4px; font-size: 12px; font-weight: 600; color: var(--doux); }
+  input { font: inherit; color: var(--texte); background: var(--surface-2); border: 1px solid var(--ligne);
+          border-radius: 8px; padding: 8px 10px; min-width: 0; }
+  input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .large { grid-column: span 2; }
+  .boutons { display: flex; gap: 8px; }
+  button { font: 600 14px/1 Inter, sans-serif; border: 0; border-radius: 8px; padding: 11px 16px; cursor: pointer;
+           background: var(--accent); color: var(--sur-accent); }
+  button:disabled { opacity: .5; cursor: default; }
+  button.discret { background: transparent; color: var(--texte); border: 1px solid var(--ligne); }
+  button[hidden] { display: none; }
+  .message { grid-column: 1 / -1; margin: 0; font-size: 14px; min-height: 1.5em; }
+  .message.erreur { color: var(--erreur); }
+  .message.ok { color: var(--ok); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-weight: 600; color: var(--doux); padding: 6px 8px; border-bottom: 1px solid var(--ligne); white-space: nowrap; }
+  td { padding: 8px; border-bottom: 1px solid var(--ligne); vertical-align: top; }
+  td.nom { font-weight: 600; }
+  td.actions { white-space: nowrap; text-align: right; }
+  td.actions button { padding: 6px 10px; font-size: 12px; margin-left: 6px; }
+  .retirer { color: var(--erreur) !important; }
+  .personne { color: var(--doux); }
+  .prise { color: var(--ok); font-weight: 600; }
+  .defile { overflow-x: auto; }
+  .vide { color: var(--doux); text-align: center; border: 1px dashed var(--ligne); border-radius: 12px; padding: 20px; }
+  @media (max-width: 760px) {
+    .large { grid-column: auto; }
+    h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <p class="marque">Saillance, lumières</p>
+  <h1>Réservations DMX</h1>
+
+  <section class="carte intro">
+    <h2>En bref</h2>
+    <ul class="points">
+      <li>Une réservation donne une IP et des univers qui se suivent à un seul dmx. Personne d'autre ne peut écrire dans ces univers sur cette IP ; les mêmes univers restent libres sur une autre IP.</li>
+      <li>Dans Touch, choisissez la réservation dans votre dmx et activez-le : elle disparaît alors des autres patches.</li>
+      <li>Elle est libérée quand le dmx est désactivé ou le patch fermé (8 s après un plantage). Sans internet, rien n'est vérifié.</li>
+    </ul>
+  </section>
+
+  <section class="carte">
+    <h2 id="titre-formulaire">Ajouter une réservation</h2>
+    <form id="formulaire">
+      <label>Nom<input name="nom" required maxlength="24" placeholder="strips_sol" pattern="[A-Za-z0-9_]+"></label>
+      <label>IP du contrôleur<input name="ip" required placeholder="10.0.21.60"></label>
+      <label>Premier univers<input name="debut" type="number" min="0" max="32767" required placeholder="1"></label>
+      <label>Dernier univers<input name="fin" type="number" min="0" max="32767" required placeholder="8"></label>
+      <label class="large">Note<input name="note" placeholder="Strips LED du sol de la Jam"></label>
+      <div class="boutons">
+        <button type="submit" id="valider">Ajouter</button>
+        <button type="button" class="discret" id="annuler" hidden>Annuler</button>
+      </div>
+      <p class="message" id="message"></p>
+    </form>
+  </section>
+
+  <section class="carte">
+    <h2>Réservations</h2>
+    <div id="liste"><p class="vide">Chargement…</p></div>
+  </section>
+</main>
+<script>
+  const echapper = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const formulaire = document.getElementById('formulaire');
+  const message = document.getElementById('message');
+  const valider = document.getElementById('valider');
+  const annuler = document.getElementById('annuler');
+  let lignes = [], envois = {}, attente = false, modifiee = '';
+
+  function dire(texte, genre) {
+    message.textContent = texte;
+    message.className = 'message ' + (genre || '');
+  }
+
+  const univers = l => String(l.debut) === String(l.fin) ? String(l.debut) : l.debut + ' à ' + l.fin;
+
+  // qui a pris une réservation (dmx activé dans les dernières secondes)
+  function envoyeur(nom) {
+    const e = envois[nom];
+    if (!e) return '<span class="personne">libre</span>';
+    return '<span class="prise" title="' + echapper(e.src || '') + '">' + echapper(e.nom || e.username) + (e.poste ? ', ' + echapper(e.poste) : '') + '</span>';
+  }
+
+  function rafraichirEnvois() {
+    if (attente || !lignes.length) return;
+    attente = true;
+    google.script.run.withSuccessHandler(r => {
+      attente = false;
+      envois = r || {};
+      document.querySelectorAll('[data-envoi]').forEach(td => { td.innerHTML = envoyeur(td.dataset.envoi); });
+    }).withFailureHandler(() => { attente = false; }).envoisReservations(lignes.map(l => l.nom));
+  }
+  setInterval(rafraichirEnvois, 2000);
+  formulaire.ip.addEventListener('input', proposer);
+
+  // premier univers libre après la dernière réservation de la même IP, proposé pour un ajout
+  function proposer() {
+    if (modifiee || formulaire.debut.value) return;
+    const ip = formulaire.ip.value.trim();
+    const fins = lignes.filter(l => String(l.ip).trim() === ip).map(l => Number(l.fin)).filter(n => !isNaN(n));
+    formulaire.debut.placeholder = fins.length ? Math.max(...fins) + 1 : 0;
+  }
+
+  function afficher(donnees) {
+    lignes = (donnees.lignes || []).slice().sort((a, b) => String(a.ip).localeCompare(String(b.ip), undefined, { numeric: true }) || Number(a.debut) - Number(b.debut));
+    const liste = document.getElementById('liste');
+    proposer();
+    if (!lignes.length) {
+      liste.innerHTML = '<p class="vide">Aucune réservation pour l\'instant. Ajoutez la première avec le formulaire.</p>';
+      return;
+    }
+    liste.innerHTML = '<div class="defile"><table><thead><tr><th>Univers</th><th>Nom</th><th>IP</th><th>Note</th><th>Utilisée par</th><th></th></tr></thead><tbody>' +
+      lignes.map(l => '<tr><td>' + echapper(univers(l)) + '</td><td class="nom">' + echapper(l.nom) + '</td><td>' + echapper(l.ip) + '</td>' +
+        '<td>' + echapper(l.note || '') + '</td><td data-envoi="' + echapper(l.nom) + '">' + envoyeur(l.nom) + '</td>' +
+        '<td class="actions"><button class="discret modifier" data-nom="' + echapper(l.nom) + '">Modifier</button>' +
+        '<button class="discret retirer" data-nom="' + echapper(l.nom) + '">Retirer</button></td></tr>').join('') +
+      '</tbody></table></div>';
+  }
+
+  function modeAjout() {
+    modifiee = '';
+    formulaire.reset();
+    document.getElementById('titre-formulaire').textContent = 'Ajouter une réservation';
+    valider.textContent = 'Ajouter';
+    annuler.hidden = true;
+    proposer();
+  }
+  annuler.addEventListener('click', () => { modeAjout(); dire(''); });
+
+  document.getElementById('liste').addEventListener('click', e => {
+    const modifier = e.target.closest('.modifier');
+    if (modifier) {
+      const l = lignes.find(x => x.nom === modifier.dataset.nom);
+      if (!l) return;
+      modifiee = l.nom;
+      ['nom', 'ip', 'debut', 'fin', 'note'].forEach(k => { formulaire[k].value = l[k] || ''; });
+      document.getElementById('titre-formulaire').textContent = 'Modifier ' + l.nom;
+      valider.textContent = 'Enregistrer';
+      annuler.hidden = false;
+      dire(envois[l.nom] ? 'Attention : ' + l.nom + ' est utilisée en ce moment. Touch prendra les changements dans quelques secondes.' : '');
+      formulaire.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    const bouton = e.target.closest('.retirer');
+    if (!bouton || !confirm('Retirer ' + bouton.dataset.nom + ' ? Les dmx qui l\'utilisent ne la trouveront plus et n\'enverront plus rien.')) return;
+    bouton.disabled = true;
+    google.script.run.withSuccessHandler(r => { if (modifiee === bouton.dataset.nom) modeAjout(); afficher(r); dire(bouton.dataset.nom + ' retirée.', 'ok'); })
+      .withFailureHandler(err => { bouton.disabled = false; dire('Erreur : ' + err.message, 'erreur'); })
+      .retirerReservation(bouton.dataset.nom);
+  });
+
+  formulaire.addEventListener('submit', e => {
+    e.preventDefault();
+    const d = Object.fromEntries(new FormData(formulaire));
+    valider.disabled = true;
+    dire(modifiee ? 'Enregistrement…' : 'Ajout…');
+    const fini = r => {
+      valider.disabled = false;
+      if (r.erreur) { dire(r.erreur, 'erreur'); return; }
+      const avant = modifiee;
+      modeAjout();
+      afficher(r);
+      dire(d.nom + (avant ? ' modifiée.' : ' ajoutée.') + ' Touch la voit dans quelques secondes.', 'ok');
+    };
+    const echec = err => { valider.disabled = false; dire('Erreur : ' + err.message, 'erreur'); };
+    if (modifiee) google.script.run.withSuccessHandler(fini).withFailureHandler(echec).modifierReservation(modifiee, d);
+    else google.script.run.withSuccessHandler(fini).withFailureHandler(echec).ajouterReservation(d);
+  });
+
+  google.script.run.withSuccessHandler(r => { afficher(r); rafraichirEnvois(); })
+    .withFailureHandler(err => { document.getElementById('liste').innerHTML = '<p class="vide">Liste inaccessible : ' + echapper(err.message) + '</p>'; })
+    .listeReservations();
+</script>
+</body>
+</html>
