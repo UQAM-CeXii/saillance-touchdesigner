@@ -41,15 +41,26 @@ def reglages(comp):
 	return comp.op('mqtt').par
 
 
-def trouver(nom):
+def eteint(c):
+	# dans une base au cook désactivé (ex. bibliotheque) : ses scripts ne peuvent pas tourner
+	while c is not None and c.path != '/':
+		if not c.allowCooking:
+			return True
+		c = c.parent()
+	return False
+
+
+def trouver(nom, tous=False):
 	# tous les send (ou receive) du patch, à n'importe quelle profondeur :
-	# reconnus par leur DAT send_fonctions ou leur étiquette
+	# reconnus par leur DAT send_fonctions ou leur étiquette ;
+	# ceux d'une base au cook désactivé seulement avec tous (mise à jour)
 	trouves = []
 	for c in op('/').findChildren(type=COMP, includeUtility=True):
 		if c.path.startswith(('/sys', '/ui', '/local')):
 			continue
 		if c.op(nom + '_fonctions') is not None or 'commun_' + nom in c.tags:
-			trouves.append(c)
+			if tous or not eteint(c):
+				trouves.append(c)
 	return trouves
 
 
@@ -162,6 +173,8 @@ def Cadence(comp):
 		c = op(chemin)
 		if c is None or c.op('send_fonctions') is None:
 			ENVOYEURS.discard(chemin)
+			continue
+		if eteint(c):
 			continue
 		try:
 			c.op('send_fonctions').module.Envoyer(c)
@@ -294,6 +307,8 @@ def Recevoir(comp, topic, payload, retained=False):
 			c = op(chemin)
 			if c is None or c.op('receive_fonctions') is None:
 				INSCRITS.pop(chemin, None)
+				continue
+			if eteint(c):
 				continue
 			c.op('receive_fonctions').module.Message(c, topic, message, recu)
 

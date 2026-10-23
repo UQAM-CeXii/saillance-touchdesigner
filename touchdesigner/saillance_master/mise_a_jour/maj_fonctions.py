@@ -171,7 +171,7 @@ def Remplacer(comp, version, fichiers):
 	dmx = []
 	# nom cherché (DAT <nom>_fonctions ou étiquette commun_<nom>) -> .tox
 	for nom, fichier in (('send', 'send_mqtt'), ('receive', 'receive'), ('dmx', 'dmx'), ('fichiers', 'fichiers_manquants')):
-		trouves = trouver(nom)
+		trouves = trouver(nom, True)
 		chemin = fichiers.get(fichier)
 		if chemin is None:
 			if trouves:
